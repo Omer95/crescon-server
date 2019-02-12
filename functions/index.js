@@ -1,6 +1,7 @@
 const express = require("express");
 const functions = require("firebase-functions");
 const bodyParser = require("body-parser");
+const cors = require("cors")({ origin: true });
 const SENDGRID_API_KEY = functions.config().sendgrid.key;
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(SENDGRID_API_KEY);
@@ -15,58 +16,70 @@ app.use(
   })
 );
 
-// app.get("/timestamp", (req, res) => {
-//   res.send(`${Date.now()}`);
-//   const msg = {
-//     from: "quote@crescon.org",
-//     templateId: "d-03b9053572554e1491f2bd97047e957b",
-//     personalizations: [
-//       {
-//         to: [
-//           {
-//             email: "omerfarooqali@gmail.com"
-//           }
-//         ]
-//       }
-//     ]
-//   };
-//   sgMail
-//     .send(msg)
-//     .then(() => {
-//       console.log("quote email sent");
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// });
-
-app.post("/timestamp", (req, res) => {
-  const username = req.name;
-  console.log(username);
-  const msg = {
-    from: "quote@crescon.org",
-    templateId: "d-03b9053572554e1491f2bd97047e957b",
-    personalizations: [
-      {
-        to: [
-          {
-            email: "omerfarooqali@gmail.com"
-          }
-        ],
-        dynamic_template_data: {
-          name: username
+app.get("/timestamp", (req, res) => {
+  cors(req, res, () => {
+    res.send(`${Date.now()}`);
+    const msg = {
+      from: "quote@crescon.org",
+      templateId: "d-03b9053572554e1491f2bd97047e957b",
+      personalizations: [
+        {
+          to: [
+            {
+              email: "usama.ahmed@crescongroup.com"
+            }
+          ]
         }
-      }
-    ]
-  };
-  sgMail
-    .send(msg)
-    .then(() => {
-      console.log("quote email sent");
-    })
-    .catch(err => {
-      console.log(err);
-    });
+      ]
+    };
+    // sgMail
+    //   .send(msg)
+    //   .then(() => {
+    //     console.log("quote email sent");
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   });
+  });
+});
+
+app.post("/workwithus", (req, res) => {
+  cors(req, res, () => {
+    const user = req.body;
+    console.log("user", user);
+    const msg = {
+      from: "careers@crescon.org",
+      templateId: "d-03b9053572554e1491f2bd97047e957b",
+      personalizations: [
+        {
+          to: [
+            {
+              email: "usama.ahmed@crescongroup.com"
+            }
+          ],
+          dynamic_template_data: {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            position: user.position,
+            message: user.message
+          }
+        }
+      ]
+    };
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log("quote email sent");
+        res.statusCode = 200;
+        res.send("success!");
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.send(err);
+      });
+  });
 });
 
 exports.app = functions.https.onRequest(app);
