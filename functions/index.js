@@ -70,6 +70,46 @@ app.post("/workwithus", (req, res) => {
     sgMail
       .send(msg)
       .then(() => {
+        console.log("contact email sent");
+        res.statusCode = 200;
+        res.send("success!");
+      })
+      .catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.send(err);
+      });
+  });
+});
+
+app.post("/quote", (req, res) => {
+  cors(req, res, () => {
+    const user = req.body;
+    console.log("user", user);
+    const msg = {
+      from: "rfq@crescon.org",
+      templateId: "d-a49142de9dce4d8b9c9ad1f5e1f37b7a",
+      personalizations: [
+        {
+          to: [
+            {
+              email: "usama.ahmed@crescongroup.com"
+            }
+          ],
+          dynamic_template_data: {
+            name: user.qname,
+            email: user.qemail,
+            phone: user.qphone,
+            company: user.company,
+            work: user.work,
+            details: user.details
+          }
+        }
+      ]
+    };
+    sgMail
+      .send(msg)
+      .then(() => {
         console.log("quote email sent");
         res.statusCode = 200;
         res.send("success!");
