@@ -97,9 +97,9 @@ app.post("/quote", (req, res) => {
             }
           ],
           dynamic_template_data: {
-            name: user.qname,
-            email: user.qemail,
-            phone: user.qphone,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
             company: user.company,
             work: user.work,
             details: user.details
